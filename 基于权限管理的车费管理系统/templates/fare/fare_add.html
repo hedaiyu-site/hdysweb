@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% block page_title %}车费上报{% endblock %}
+{% block page_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card border-0 shadow-lg">
+            <div class="card-header bg-white py-4">
+                <h3 class="h4 mb-0">
+                    <i class="fas fa-file-invoice-dollar text-primary me-2"></i>车费上报
+                </h3>
+            </div>
+
+            <div class="card-body p-5">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{ obj.id }}">
+                    <input type="hidden" name="dep_id" id="dep_id" value="{{ dep_obj.id }}">
+                    <input type="hidden" name="car_id" id="car_id" value="">
+
+                    <!-- 部门信息 -->
+                    <div class="mb-4">
+                        <label class="form-label fw-medium">部门名称</label>
+                        <input type="text" class="form-control form-control-lg"
+                               value="{{ dep_obj.dep_name }}" disabled>
+                    </div>
+
+                    <!-- 车辆选择 -->
+                    <div class="mb-4">
+                        <label class="form-label fw-medium">选择车辆</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg"
+                                   id="plate_number" name="plate_number" readonly
+                                   placeholder="请选择车辆">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    data-bs-toggle="modal" data-bs-target="#vehicleModal">
+                                <i class="fas fa-search me-2"></i>选择
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 车辆信息 -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">司机</label>
+                            <input type="text" class="form-control form-control-lg"
+                                   id="driver" name="driver" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">单价</label>
+                            <div class="input-group">
+                                <span class="input-group-text">¥</span>
+                                <input type="number" class="form-control form-control-lg"
+                                       id="price" name="price" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 费用计算 -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">公里数</label>
+                            <input type="number" class="form-control form-control-lg"
+                                   id="distance" name="distance" step="0.1"
+                                   oninput="calculateFare()" required>
+                            <div class="invalid-feedback">请输入有效公里数</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">车费</label>
+                            <div class="input-group">
+                                <span class="input-group-text">¥</span>
+                                <input type="number" class="form-control form-control-lg"
+                                       id="fare" name="fare" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 其他信息 -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">乘车人</label>
+                            <input type="text" class="form-control form-control-lg"
+                                   id="passenger" name="passenger" required>
+                            <div class="invalid-feedback">请输入乘车人姓名</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">乘车时间</label>
+                            <input type="date" class="form-control form-control-lg"
+                                   id="drive_date" name="drive_date"
+                                   value="{{ tday }}" readonly>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label fw-medium">乘车说明</label>
+                        <textarea class="form-control form-control-lg"
+                                  id="remark" name="remark" rows="3"></textarea>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg py-3">
+                            <i class="fas fa-paper-plane me-2"></i>提交上报
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 车辆选择模态框 -->
+<div class="modal fade" id="vehicleModal" tabindex="-1" aria-labelledby="vehicleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="vehicleModalLabel">
+                    <i class="fas fa-car me-2"></i>选择车辆
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 40px"></th>
+                                <th>车牌号</th>
+                                <th>司机</th>
+                                <th>单价</th>
+                                <th>备注说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for car in car_list %}
+                            <tr class="vehicle-row" data-car-id="{{ car.id }}">
+                                <td>
+                                    <input type="radio" name="vehicleRadio"
+                                           class="form-check-input" id="car{{ car.id }}">
+                                </td>
+                                <td>{{ car.plate_number }}</td>
+                                <td>{{ car.driver }}</td>
+                                <td>¥{{ car.price }}</td>
+                                <td class="text-muted">{{ car.remarks|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="confirmSelection()">确认选择</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 车辆选择功能
+document.addEventListener('DOMContentLoaded', function() {
+    // 行点击事件
+    document.querySelectorAll('.vehicle-row').forEach(row => {
+        row.addEventListener('click', function() {
+            // 移除所有行的选中状态
+            document.querySelectorAll('.vehicle-row').forEach(r =>
+                r.classList.remove('table-active'));
+            // 设置当前行选中
+            this.classList.add('table-active');
+            this.querySelector('input[type="radio"]').checked = true;
+        });
+    });
+});
+
+function confirmSelection() {
+    const selectedRow = document.querySelector('.vehicle-row.table-active');
+    if (!selectedRow) {
+        alert('请先选择车辆！');
+        return;
+    }
+
+    const cells = selectedRow.cells;
+    document.getElementById('car_id').value = selectedRow.dataset.carId;
+    document.getElementById('plate_number').value = cells[1].textContent;
+    document.getElementById('driver').value = cells[2].textContent;
+    document.getElementById('price').value = cells[3].textContent.replace('¥', '');
+
+    // 关闭模态框
+    bootstrap.Modal.getInstance(document.getElementById('vehicleModal')).hide();
+    // 自动计算车费
+    calculateFare();
+}
+
+// 实时计算车费
+function calculateFare() {
+    const price = parseFloat(document.getElementById('price').value) || 0;
+    const distance = parseFloat(document.getElementById('distance').value) || 0;
+    const fare = (price * distance).toFixed(2);
+    document.getElementById('fare').value = fare;
+}
+</script>
+
+<style>
+/* 自定义样式 */
+.vehicle-row {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.vehicle-row:hover {
+    background-color: #f8f9fa;
+}
+
+.form-control-lg {
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+}
+
+.modal-content {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.table-hover tbody tr:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}

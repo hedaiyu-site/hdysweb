@@ -1,0 +1,105 @@
+<div class="sidebar bg-white shadow">
+    <nav class="navbar navbar-light flex-column p-2">
+        {% for k,item in menu_result.items %}
+        <div class="w-100 mb-2">
+            <!-- 一级菜单 -->
+            <div class="nav-item">
+                <a class="nav-link d-flex align-items-center rounded-3"
+                   href="#"
+                   role="button"
+                   data-bs-toggle="collapse"
+                   data-bs-target="#submenu-{{ forloop.counter }}">
+                    <i class="fas {{ item.menu_icon|default:'fa-folder' }} text-primary me-2"></i>
+                    <span class="text-dark fw-medium">{{ item.menu_title }}</span>
+                    <i class="fas fa-chevron-{% if item.active %}down{% else %}right{% endif %} ms-auto text-muted transition-all"></i>
+                </a>
+
+                <!-- 二级菜单 -->
+                <div class="collapse {% if item.active %}show{% endif %}" id="submenu-{{ forloop.counter }}">
+                    <div class="list-group list-group-flush border-start ms-4">
+                        {% for v in item.children %}
+                        <a href="{{ v.url }}"
+                           class="list-group-item list-group-item-action border-0 py-2
+                                  {% if v.active %}active bg-primary text-white{% else %}text-dark{% endif %}">
+                            <i class="fas {{ v.icon|default:'fa-circle' }} me-2 fa-xs"></i>
+                            {{ v.title }}
+                            {% if v.active %}<span class="badge bg-white text-primary ms-2">当前</span>{% endif %}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </nav>
+</div>
+
+<style>
+.sidebar {
+    min-height: 100vh;
+    width: 260px;
+    background: #f8fafc;
+    border-right: 1px solid #e9ecef;
+}
+
+.nav-link {
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+    background: rgba(13,110,253,0.05);
+}
+
+.nav-link:hover {
+    background: rgba(13,110,253,0.1);
+    transform: translateX(4px);
+}
+
+.nav-link.active {
+    background: rgba(13,110,253,0.15) !important;
+    border-left: 3px solid #0d6efd;
+}
+
+.list-group-item {
+    border-radius: 6px !important;
+    margin: 2px 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+}
+
+.list-group-item:hover {
+    background: rgba(13,110,253,0.08) !important;
+    transform: translateX(6px);
+}
+
+.list-group-item.active {
+    box-shadow: 0 2px 8px rgba(13,110,253,0.2);
+}
+
+.fa-chevron-right {
+    transform: rotate(0deg);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapse.show .fa-chevron-right {
+    transform: rotate(90deg);
+}
+
+.badge {
+    font-size: 0.75em;
+    padding: 0.25em 0.6em;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 220px;
+        position: fixed;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+}
+</style>

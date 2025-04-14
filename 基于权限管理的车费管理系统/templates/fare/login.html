@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>系统登录 - 车费管理系统</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background: #f0f8ff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-height: 600px;
+        }
+        .left-panel {
+            background: linear-gradient(rgba(25, 113, 194, 0.8), rgba(25, 113, 194, 0.8)),
+                        url({% static 'images/login-bg.jpg' %});
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: white;
+        }
+        .welcome-text {
+            text-align: center;
+        }
+        .welcome-text h1 {
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .right-panel {
+            padding: 50px;
+        }
+        .login-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .login-header h2 {
+            color: #1971c2;
+            font-weight: 600;
+            margin: 0;
+        }
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 20px;
+        }
+        .input-group-text {
+            background: #e7f5ff;
+            border-color: #d0ebff;
+            border-radius: 8px 0 0 8px !important;
+        }
+        .btn-primary {
+            background: #1971c2;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background: #1864ab;
+            transform: translateY(-1px);
+        }
+        .error-msg {
+            background: #ffe3e3;
+            border: 1px solid #ffc9c9;
+            color: #c92a2a;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+        }
+        @media (max-width: 768px) {
+            .left-panel {
+                display: none;
+            }
+            .right-panel {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <div class="row g-0">
+                <!-- 左侧图片背景 -->
+                <div class="col-md-6 left-panel">
+                    <div class="welcome-text">
+                        <h1><i class="fas fa-car-side fa-3x mb-4"></i></h1>
+                        <h1>欢迎使用车费管理系统</h1>
+                        <p class="lead mt-3">高效管理 · 智能统计 · 安全可靠</p>
+                    </div>
+                </div>
+
+                <!-- 右侧登录表单 -->
+                <div class="col-md-6 right-panel">
+                    <div class="login-header">
+                        <h2><i class="fas fa-user-shield fa-lg mr-2"></i>用户登录</h2>
+                    </div>
+                    <form method="post" action="/login/">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label">用户名</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user text-primary"></i>
+                                </span>
+                                <input type="text" class="form-control"
+                                       name="username" placeholder="请输入用户名" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">密码</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock text-primary"></i>
+                                </span>
+                                <input type="password" class="form-control"
+                                       name="password" placeholder="请输入密码" required>
+                            </div>
+                        </div>
+
+                        {% if error %}
+                        <div class="error-msg">
+                            <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+                        </div>
+                        {% endif %}
+
+                        <button class="btn btn-primary w-100 mt-4" type="submit">
+                            <i class="fas fa-sign-in-alt me-2"></i>立即登录
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Toast 容器（放在页面底部） -->
+    {% if messages %}
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
+            <div class="toast-header">
+                <strong class="me-auto">系统提示</strong>
+                <small>刚刚</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 自动显示 Toast 的 JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toastEl = document.getElementById('liveToast');
+            if (toastEl) {
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+        });
+    </script>
+
+
+    <script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

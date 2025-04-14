@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block page_title %}车辆信息管理{% endblock %}
+{% block page_content %}
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
+        <h3 class="mb-0"><i class="fas fa-car text-primary me-2"></i>车辆信息列表</h3>
+        	<a href="/fare/caradd/" class="btn btn-primary btn-lg rounded-pill">
+            <i class="fas fa-plus-circle me-2"></i>新增车辆
+        </a>
+    </div>
+
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="ps-4">车牌号</th>
+                        <th scope="col">司机</th>
+                        <th scope="col">单价</th>
+                        <th scope="col">备注说明</th>
+                        <th scope="col" class="text-end pe-4">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in carlist %}
+                    <tr class="position-relative hover-shadow">
+                        <td class="ps-4 fw-medium text-primary">{{ row.plate_number }}</td>
+                        <td>{{ row.driver }}</td>
+                        <td>¥{{ row.price }}</td>
+                        <td class="text-muted">{{ row.remarks|default:"-" }}</td>
+                        <td class="text-end pe-4">
+                            <div class="d-inline-flex gap-2">
+                                	<a href="/fare/caredit/{{ row.id }}/"
+                                   class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    <i class="fas fa-edit me-2"></i>编辑
+                                </a>
+                                <!-- 删除按钮（带 JS 确认） -->
+                            	<a href="/fare/cardel/{{ row.id }}/"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('确定要删除车牌号 {{ row.plate_number }} 吗？')">
+                                    <i class="fas fa-trash-alt me-1"></i>删除
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if not carlist %}
+            <div class="text-center py-5">
+                <i class="fas fa-car-side fa-2x text-muted mb-3"></i>
+                <p class="text-muted">暂无车辆信息</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

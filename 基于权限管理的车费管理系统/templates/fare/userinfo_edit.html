@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block page_title %}登录用户分配到部门{% endblock %}
+{% block page_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg">
+            <div class="card-header bg-white py-4">
+                <h3 class="h4 mb-0 text-primary">
+                    <i class="fas fa-car me-2"></i>登录用户分配到部门
+                </h3>
+            </div>
+
+            <div class="card-body p-5">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+
+                    <!-- 用户名 -->
+                    <input type="hidden" name="id" value="{{ obj.id }}">
+                    <div class="mb-4">
+                        <label for="username" class="form-label fw-medium">
+                            <i class="fas fa-car me-2 text-muted"></i>账号
+                        </label>
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control form-control-lg rounded-3"
+                                   id="username"
+                                   name="username"
+                                   placeholder="请输入用户名"
+                                   value="{{ obj.username }}"
+                                   disabled>
+                        </div>
+                    </div>
+
+                    <!-- 姓名 -->
+                    <div class="mb-4">
+                        <label for="nickname" class="form-label fw-medium">
+                            <i class="fas fa-user me-2 text-muted"></i>姓名
+                        </label>
+                        <input type="text"
+                               class="form-control form-control-lg rounded-3"
+                               id="nickname"
+                               name="nickname"
+                               placeholder="请输入职员姓名"
+                               value="{{ obj.driver }}"
+                               disabled>
+                    </div>
+
+                    <!-- 邮箱 -->
+                    <div class="mb-4">
+                        <label for="email" class="form-label fw-medium">
+                            <i class="fas fa-dollar-sign me-2 text-muted"></i>邮箱
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text rounded-start-3">¥</span>
+                            <input type="text"
+                                   class="form-control form-control-lg rounded-end-3"
+                                   id="email"
+                                   name="email"
+                                   value="{{ obj.email }}"
+                                   disabled>
+                            </div>
+                        </div>
+
+                    <!-- 部门名称 -->
+                    <div class="mb-5">
+                        <label for="remarks" class="form-label fw-medium">
+                            <i class="fas fa-comment me-2 text-muted"></i>部门名称
+                        </label>
+                       <div class="col-md-8">
+                           <select name="dep_id" id="dep_id" class="form-control">
+                               {% for dep in deplist %}
+                                   {% if obj.loguser.dep_id == dep.id %}
+                                       <option value="{{ dep.id }}" selected>{{ dep.dep_name }}</option>
+                                       {% else %}
+                                       <option value="{{ dep.id }}" >{{ dep.dep_name }}</option>
+                                   {% endif %}
+                               {% endfor %}
+                           </select>
+                       </div>
+                    </div>
+
+                    <!-- 保存按钮 -->
+                    <div class="d-grid">
+                        <button type="submit"
+                                class="btn btn-primary btn-lg rounded-pill py-3 fw-medium">
+                            <i class="fas fa-plus-circle me-2"></i>保存
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

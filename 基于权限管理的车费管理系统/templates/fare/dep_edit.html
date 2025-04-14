@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block page_title %}部门修改{% endblock %}
+{% block page_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg">
+            <div class="card-header bg-white py-4">
+                <h3 class="h4 mb-0 text-primary">
+                    <i class="fas fa-car me-2"></i>部门信息修改
+                </h3>
+            </div>
+
+            <div class="card-body p-5">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+
+                    <!-- 部门名称 -->
+                    <input type="hidden" name="id" value="{{ obj.id }}">
+                    <div class="mb-4">
+                        <label for="dep_name" class="form-label fw-medium">
+                            <i class="fas fa-car me-2 text-muted"></i>部门名称
+                        </label>
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control form-control-lg rounded-3"
+                                   id="dep_name"
+                                   name="dep_name"
+                                   placeholder="请输入车牌号码"
+                                   value="{{ obj.dep_name }}"
+                                   required>
+                            <div class="invalid-feedback">
+                                请输入有效的部门名称
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 备注 -->
+                    <div class="mb-5">
+                        <label for="dep_script" class="form-label fw-medium">
+                            <i class="fas fa-comment me-2 text-muted"></i>备注说明
+                        </label>
+                        <input type="text" class="form-control form-control-lg rounded-3"
+                                  id="dep_script"
+                                  name="dep_script"
+                                  value="{{ obj.dep_script }}"
+                                  placeholder="可填写额外说明信息"></input>
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <div class="d-grid">
+                        <button type="submit"
+                                class="btn btn-primary btn-lg rounded-pill py-3 fw-medium">
+                            <i class="fas fa-plus-circle me-2"></i>修改部门信息
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

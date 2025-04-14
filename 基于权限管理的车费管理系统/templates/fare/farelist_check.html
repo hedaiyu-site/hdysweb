@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% block page_title %}车费审批{% endblock %}
+{% block page_content %}
+<div class="card border-0 shadow-lg">
+    <div class="card-header bg-primary text-white py-3">
+        <h3 class="h4 mb-0">
+            <i class="fas fa-clipboard-check me-2"></i>车费审批
+        </h3>
+    </div>
+
+    <div class="card-body p-4">
+        <!-- 筛选表单 -->
+        <form method="post" class="mb-4" action="/fare/farecheck/">
+            {% csrf_token %}
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">乘车日期从</label>
+                    <input type="date" class="form-control form-control-lg" id="myDate"
+                           name="drive_date1" value="{{ conditions.drive_date__gte }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">至</label>
+                    <input type="date" placeholder="请选择日期" class="form-control form-control-lg" id="myDate"
+                           name="drive_date2" value="{{ conditions.drive_date__lte }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">用车部门</label>
+                    <select name="department" class="form-select form-select-lg">
+                        <option value="">全部部门</option>
+                        {% for dep in dep_list %}
+                        <option value="{{ dep.id }}" {% if dep.id == conditions.dep_id %}selected{% endif %}>
+                            {{ dep.dep_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-search me-2"></i>查询
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- 审批操作栏 -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="selectAll"
+                       style="width: 1.2rem; height: 1.2rem" onclick="toggleAll()">
+                <label class="form-check-label ms-2" for="selectAll">全选/反选</label>
+            </div>
+            <button class="btn btn-success btn-lg" data-bs-toggle="modal"
+                    data-bs-target="#approveModal">
+                <i class="fas fa-check-circle me-2"></i>批量审批
+            </button>
+        </div>
+
+        <!-- 数据表格 -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 60px"></th>
+                        <th>用车部门</th>
+                        <th>乘车人</th>
+                        <th>车辆信息</th>
+                        <th class="text-end">单价</th>
+                        <th class="text-end">里程</th>
+                        <th class="text-end">车费</th>
+                        <th>乘车日期</th>
+                        <th>说明</th>
+                        <th>录入人</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in fare_list %}
+                    <tr>
+                        <td>
+                            <input class="form-check-input row-check" type="checkbox"
+                                   style="width: 1.2rem; height: 1.2rem"
+                                   value="{{ row.id }}" id="selectAll" onclick="toggleAll()">
+                        </td>
+                        <td>{{ row.dep.dep_name }}</td>
+                        <td>{{ row.passenger }}</td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-medium">{{ row.car.plate_number }}</span>
+                                <small class="text-muted">{{ row.car.driver }}</small>
+                            </div>
+                        </td>
+                        <td class="text-end">¥{{ row.car.price }}</td>
+                        <td class="text-end">{{ row.distance }}km</td>
+                        <td class="text-end fw-bold text-success">¥{{ row.fare }}</td>
+                        <td>{{ row.drive_date|date:'Y-m-d' }}</td>
+                        <td class="text-muted">{{ row.remark|default:"-"|truncatechars:12 }}</td>
+                        <td>{{ row.oprator }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if not fare_list %}
+            <div class="text-center py-5">
+                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                <p class="text-muted">暂无待审批记录</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 分页 -->
+        {% if page_nav %}
+        <nav aria-label="分页导航">
+            <ul class="pagination justify-content-center">
+                {{ page_nav|safe }}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 审批确认模态框 -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title text-success" id="approveModalLabel">
+                    <i class="fas fa-check-circle me-2"></i>审批确认
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+            </div>
+            <div class="modal-body pt-4">
+                <p class="lead" id="approveMessage">确定要审批通过选中的 <span id="selectedCount">0</span> 条记录吗？</p>
+                <p class="text-muted small">审批通过后记录将不可修改</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success rounded-pill px-4" onclick="submitApproval()">
+                    <a href="/fare/farecheck/"><i class="fas fa-check me-2"></i>确认审批</a>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 全选/反选功能
+function toggleAll() {
+    const checkboxes = document.querySelectorAll('.row-check');
+    const selectAll = document.getElementById('selectAll').checked;
+    checkboxes.forEach(checkbox => checkbox.checked = selectAll);
+    updateSelectedCount();
+}
+
+// 更新选中数量
+function updateSelectedCount() {
+    const selected = document.querySelectorAll('.row-check:checked').length;
+    document.getElementById('selectedCount').textContent = selected;
+}
+
+// 初始化模态框事件
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('approveModal');
+    modal.addEventListener('show.bs.modal', function() {
+        const selected = document.querySelectorAll('.row-check:checked').length;
+        if(selected === 0) {
+            document.getElementById('approveMessage').textContent = '请先选择要审批的记录';
+        }
+    });
+
+    // 绑定复选框变化事件
+    document.querySelectorAll('.row-check').forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+    });
+});
+
+// 提交审批
+function submitApproval() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('approveModal'))
+    const confirmBtn = document.querySelector('#approveModal .btn-success');
+    const selectedIds = Array.from(document.querySelectorAll('.row-check:checked'))
+                          .map(checkbox => checkbox.value)
+                          .join(',');
+
+    if(!selectedIds) {
+        modal.hide();
+        return;
+    }
+
+    confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>审批中...';
+    confirmBtn.disabled = true;
+
+    fetch(`/fare/fareapprove/${selectedIds}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.status) {
+            showToast('审批成功', 'success');
+            setTimeout(() => {window.location.href = '/fare/farecheck/?t=' + Date.now();},2000);
+        } else {
+            showToast('审批失败: ' + data.error, 'danger');
+        }
+        {#bootstrap.Modal.getInstance(document.getElementById('approveModal')).hide();#}
+    }).finally(()=>{
+        confirmBtn.innerHTML = '<i class="fas fa-check me-2"></i>确认审批';
+        confirmBtn.disabled = false;
+        modal.hide();
+    })
+}
+document.getElementById('myDate').addEventListener('change', function() {
+  if(this.value == ""){
+      this.value = "";
+  }
+});
+</script>
+
+<style>
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+.form-check-input {
+    cursor: pointer;
+}
+
+.modal-content {
+    border-radius: 1rem;
+}
+</style>
+{% endblock %}

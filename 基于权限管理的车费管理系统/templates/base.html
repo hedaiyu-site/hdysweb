@@ -1,0 +1,152 @@
+{% load custom_tag %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}车费管理系统{% endblock %}</title>
+
+    <!-- Core CSS -->
+    <link rel="icon" type="image/png" href="{% static 'icons8-项目-96.png' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+    <!-- Core JavaScript -->
+    <script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <!-- 顶部导航 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-car-side me-2"></i>车费管理系统
+            </a>
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#"
+                           role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>当前用户
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-cog me-2"></i>个人设置
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger"
+                                  href="{% url 'logout' %}">
+                                <i class="fas fa-sign-out-alt me-2"></i>注销登录
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid flex-grow-1">
+        <div class="row h-100">
+            <!-- 动态侧边栏 -->
+            <div class="col-md-3 col-xl-2 p-0 bg-dark">
+                {% rbac_menu request %}
+            </div>
+
+            <!-- 主内容区 -->
+            <main class="col-md-9 col-xl-10 px-4 bg-light">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap
+                     align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h3 mb-0">
+                        <i class="fas {% block title_icon %}fa-file-alt{% endblock %} me-2"></i>
+                        {% block page_title %}{% endblock %}
+                    </h1>
+                </div>
+
+                {% block page_content %}
+                <!-- 页面具体内容 -->
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer bg-light mt-auto py-3 border-top">
+        <div class="container-fluid text-center">
+            <span class="text-muted small">
+                &copy; {% now "Y" %} 车费管理系统
+                <span class="mx-2">|</span>
+                <a href="#" class="text-reset text-decoration-none">服务条款</a>
+                <span class="mx-1">·</span>
+                <a href="#" class="text-reset text-decoration-none">隐私政策</a>
+            </span>
+        </div>
+    </footer>
+</body>
+</html>
+
+{#    <!-- Toast 容器（放在页面底部） -->#}
+{#    {% if messages and request.path == '/fare/index/' or request.path == '/fare/caradd/' or request.path == '/fare/caredit/' or request.path == '/fare/cardel/' or request.path == '/fare/depadd/' or request.path == '/fare/depedit/' or request.path == '/fare/depdel/' or request.path == '/fare/useredit/' or request.path == '/fare/faredel/' or request.path == '/fare/fareadd/' or request.path == '/fare/fareedit/'%}#}
+{#    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">#}
+{#        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">#}
+{#            <div class="toast-header">#}
+{#                <strong class="me-auto">系统提示</strong>#}
+{#                <small>刚刚</small>#}
+{#                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>#}
+{#            </div>#}
+{#            <div class="toast-body">#}
+{#                    {% for message in messages %}#}
+{#                        {{ message }}#}
+{#                    {% endfor %}#}
+{#                {% endif %}#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+{#    <!-- 自动显示 Toast 的 JavaScript -->#}
+{#    <script>#}
+{#        document.addEventListener('DOMContentLoaded', function() {#}
+{#            var toastEl = document.getElementById('liveToast');#}
+{#            if (toastEl) {#}
+{#                var toast = new bootstrap.Toast(toastEl);#}
+{#                toast.show();#}
+{#            }#}
+{#        });#}
+{#    </script>#}
+
+    <!-- 加深侧边导航 -->
+{#    <script>#}
+{#    document.addEventListener('DOMContentLoaded', function() {#}
+{#        // 获取当前URL路径#}
+{#        var path = window.location.pathname;#}
+{#        var navLinks = document.querySelectorAll('.nav-item a');#}
+{##}
+{#        // 为当前页面对应的导航项添加active类#}
+{#        navLinks.forEach(function(link) {#}
+{#            if (link.getAttribute('href') === path) {#}
+{#                link.classList.add('active');#}
+{#            }#}
+{#        });#}
+{##}
+{#        // 点击事件处理#}
+{#        navLinks.forEach(function(link) {#}
+{#            link.addEventListener('click', function() {#}
+{#                navLinks.forEach(function(item) {#}
+{#                    item.classList.remove('active');#}
+{#                });#}
+{#                this.classList.add('active');#}
+{#            });#}
+{#        });#}
+{#    });#}
+{#    </script>#}
+</body>
+</html>

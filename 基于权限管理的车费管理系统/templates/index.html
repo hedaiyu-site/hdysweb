@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block page_content %}
+    <div class="jumbotron" >
+    <h3>你好，朋友！</h3>
+    <p>这是我参照教程制作的基于RBAC权限管理的车费管理系统</p>
+    <p>用户登录后可以在左侧栏看见你所拥有的权限</p>
+    <p>全部权限包括(车辆信息，部门信息，用户的部门信息，车费信息)</p>
+    <p>联系我2625694315@qq.com帮你修改权限</p>
+    <p></p>
+    <p><a href="#" class="btn btn-primary" role="button">确定</a></p>
+    </div>
+    {% if messages %}
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
+            <div class="toast-header">
+                <strong class="me-auto">系统提示</strong>
+                <small>刚刚</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- 自动显示 Toast 的 JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toastEl = document.getElementById('liveToast');
+            if (toastEl) {
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+        });
+    </script>
+{% endblock %}

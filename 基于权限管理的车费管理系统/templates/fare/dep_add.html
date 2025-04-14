@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block page_title %}新增部门{% endblock %}
+{% block page_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg">
+            <div class="card-header bg-white py-4">
+                <h3 class="h4 mb-0 text-primary">
+                    <i class="fas fa-car me-2"></i>新增部门信息
+                </h3>
+            </div>
+
+            <div class="card-body p-5">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+
+                    <!-- 车牌号 -->
+                    <div class="mb-4">
+                        <label for="dep_name" class="form-label fw-medium">
+                            <i class="fas fa-car me-2 text-muted"></i>部门名称
+                        </label>
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control form-control-lg rounded-3"
+                                   id="dep_name"
+                                   name="dep_name"
+                                   placeholder="请输入部门名称"
+                                   required>
+                            <div class="invalid-feedback">
+                                请输入有效的部门名称
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 备注 -->
+                    <div class="mb-5">
+                        <label for="dep_script" class="form-label fw-medium">
+                            <i class="fas fa-comment me-2 text-muted"></i>备注说明
+                        </label>
+                        <textarea class="form-control form-control-lg rounded-3"
+                                  id="dep_script"
+                                  name="dep_script"
+                                  rows="3"
+                                  placeholder="可填写额外说明信息"></textarea>
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <div class="d-grid">
+                        <button type="submit"
+                                class="btn btn-primary btn-lg rounded-pill py-3 fw-medium">
+                            <i class="fas fa-plus-circle me-2"></i>添加部门信息
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
