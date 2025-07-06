@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'fare.apps.FareConfig',
     'rbac',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -85,7 +86,7 @@ DATABASES = {
         "HOST": "127.0.0.1",
         "PORT": 3306,
         "USER": "heyu",
-        "PASSWORD": "StrongPassword123!",
+        "PASSWORD": "123456",
         "CHARSET": "utf8"
     }
 }
@@ -146,4 +147,4 @@ SAFE_URL = [
 
 LOGIN_URL = '/login/'
 
-STATIC_ROOT = os.path.join(BASE_DIR,'/static/')
+STATIC_ROOT = os.path.join(BASE_DIR,'collected_static')

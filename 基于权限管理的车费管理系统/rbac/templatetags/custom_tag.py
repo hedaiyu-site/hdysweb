@@ -54,3 +54,4 @@ def get_structure_data(request):
 def rbac_menu(request):
     menu_data = get_structure_data(request)
     return {'menu_result':menu_data}
+register.filter('get_structure_data',get_structure_data)

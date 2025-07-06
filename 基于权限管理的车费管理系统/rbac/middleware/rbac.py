@@ -56,9 +56,9 @@ class RbacMiddleware(MiddlewareMixin):
             if flag:
                 return None
 
-        # if not flag:
-        #     if settings.DEBUG:
-        #         info = '<br/>' + ('<br/>'.join(code_url['urls']))
-        #         return HttpResponse('无权限，请尝试访问以下地址: %s' % info)
-        #     else:
-        #         return HttpResponse('无权限访问')
+        if not flag:
+            if settings.DEBUG:
+                info = '<br/>' + ('<br/>'.join(code_url['urls']))
+                return HttpResponse('无权限，请尝试访问以下地址: %s' % info)
+            else:
+                return HttpResponse('无权限访问')

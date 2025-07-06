@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,HttpResponse
 from django.conf import settings
 
 from rbac import models as rbac_models
@@ -14,24 +14,26 @@ from . import models
 
 
 # Create your views here.
-# class BasePermPage(object):
-#     # 类的初始化函数,code_list参数是接收request.session['permission_codes']的值
-#     # request.session['permission_codes']的值在rbac模块的中间件RbacMiddleware中赋予
-#     def __init__(self,code_list):
-#         self.code_list = code_list
-#
-#     def has_add(self):
-#         if "add" in self.code_list:
-#             return 1
-#
-#     def has_del(self):
-#         if "del" in self.code_list:
-#             return True
-#
-#     def has_edit(self):
-#         if "edit" in self.code_list:
-#             return True
+class BasePermPage(object):
+    # 类的初始化函数,code_list参数是接收request.session['permission_codes']的值
+    # request.session['permission_codes']的值在rbac模块的中间件RbacMiddleware中赋予
+    def __init__(self,code_list):
+        self.code_list = code_list
 
+    def has_add(self):
+        if "add" in self.code_list:
+            return 1
+
+    def has_del(self):
+        if "del" in self.code_list:
+            return True
+
+    def has_edit(self):
+        if "edit" in self.code_list:
+            return True
+
+# def index_1(request):
+#     return HttpResponse("测试")
 
 def index(request):
     #messages.success(request,'登录成功')
@@ -73,9 +75,10 @@ def logout(request):
 
 # 车辆信息相关
 def carlist(request):
+    pagpermission=BasePermPage(request.session.get('permission_codes'))
     carlist = models.CarInfo.objects.all()
     # 向模板文件传递变量，并把保存BasePermPage实例化对象的变量传递过去
-    return render(request, 'fare/carinfo_list.html', {'carlist': carlist})
+    return render(request, 'fare/carinfo_list.html', {'carlist': carlist,'pagpermission':pagpermission})
 
 
 def caradd(request):
@@ -129,8 +132,9 @@ def cardel(request, id):
 
 # 部门相关
 def deplist(request):
+    pagpermission = BasePermPage(request.session.get('permission_codes'))
     dep_list = models.Department.objects.all()
-    return render(request, 'fare/dep_list.html', {'deplist': dep_list})
+    return render(request, 'fare/dep_list.html', {'deplist': dep_list,'pagpermission':pagpermission})
 
 
 def depadd(request):
@@ -201,6 +205,7 @@ def useredit(request, userid):
 
 # 车费信息相关
 def farelist(request):
+    pagpermission = BasePermPage(request.session.get('permission_codes'))
     # 取得系统当前日期
     tday = datetime.datetime.now().date()
     # 从session中取出登录用户的部门，用户部门的值是在login()视图函数中存的
@@ -209,7 +214,7 @@ def farelist(request):
     fare_list = models.Fare.objects.all().filter(drive_date=tday,
                                                  dep_id=cur_dep,
                                                  approve_status='0')
-    return render(request, 'fare/fare_list.html', {'fare_list': fare_list})
+    return render(request, 'fare/fare_list.html', {'fare_list': fare_list,'pagpermission':pagpermission})
 
 
 def faredel(request, fareid):
@@ -676,7 +681,4 @@ def annotate_fare(request):
     faredic[depname + 'hj'] = onefare
     return render(request,'fare/fare_addup.html',{'faredic':faredic,})
 
-# def path(request):
-#     fare_path = ['"/fare/index/"', '"/fare/caradd/"', '"/fare/caredit/"']
-#     return render(request,'base.html',locals())
 

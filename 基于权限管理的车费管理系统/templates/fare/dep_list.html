@@ -4,9 +4,11 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
         <h3 class="mb-0"><i class="fas fa-car text-primary me-2"></i>部门信息列表</h3>
+        {% if pagpermission.has_add %}
         	<a href="/fare/depadd/" class="btn btn-primary btn-lg rounded-pill">
             <i class="fas fa-plus-circle me-2"></i>新增
         </a>
+        {% endif %}
     </div>
 
     <div class="card-body p-4">
@@ -26,16 +28,20 @@
                         <td class="text-muted">{{ row.dep_script|default:"-" }}</td>
                         <td class="text-end pe-4">
                             <div class="d-inline-flex gap-2">
+                                {% if pagpermission.has_edit %}
                                 	<a href="/fare/depedit/{{ row.id }}/"
                                    class="btn btn-sm btn-outline-primary rounded-pill px-3">
                                     <i class="fas fa-edit me-2"></i>编辑
                                 </a>
+                                {% endif %}
                                 <!-- 删除按钮（带 JS 确认） -->
+                                {% if pagpermission.has_del %}
                                 <a href="/fare/depdel/{{ row.id }}/"
                                    class="btn btn-sm btn-danger"
                                    onclick="return confirm('确定要删除部门名称 {{ row.dep_name }} 吗？')">
                                     <i class="fas fa-trash-alt me-1"></i>删除
                                 </a>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>

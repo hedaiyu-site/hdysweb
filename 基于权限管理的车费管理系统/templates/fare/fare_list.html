@@ -6,9 +6,11 @@
         <h3 class="h4 mb-0">
             <i class="fas fa-file-invoice-dollar text-primary me-2"></i>当日车费上报
         </h3>
+        {% if pagpermission.has_add %}
         	<a href="/fare/fareadd/" class="btn btn-primary rounded-pill px-4 py-2">
             <i class="fas fa-plus-circle me-2"></i>新增记录
         </a>
+        {% endif %}
     </div>
 
     <div class="card-body p-0">
@@ -48,16 +50,20 @@
                         <td>{{ row.oprator }}</td>
                         <td class="text-end pe-4">
                             <div class="d-inline-flex gap-2">
+                                {% if pagpermission.has_edit %}
                                 	<a href="/fare/fareedit/{{ row.id }}/"
                                    class="btn btn-sm btn-outline-primary rounded-pill px-3">
                                     <i class="fas fa-edit me-2"></i>编辑
                                 </a>
+                                {% endif %}
+                                {% if pagpermission.has_del %}
                                     <button class="btn btn-sm btn-outline-danger rounded-pill px-3"
                                             data-bs-toggle="modal"
                                             data-bs-target="#delModal"
                                             data-rowid="{{ row.id }}">
                                         <i class="fas fa-trash-alt me-2"></i>删除
                                     </button>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
